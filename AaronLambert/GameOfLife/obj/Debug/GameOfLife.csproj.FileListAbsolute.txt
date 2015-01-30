@@ -1,0 +1,10 @@
+c:\users\stguser\documents\visual studio 2013\Projects\GameOfLife\GameOfLife\bin\Debug\GameOfLife.exe.config
+c:\users\stguser\documents\visual studio 2013\Projects\GameOfLife\GameOfLife\bin\Debug\GameOfLife.exe
+c:\users\stguser\documents\visual studio 2013\Projects\GameOfLife\GameOfLife\bin\Debug\GameOfLife.pdb
+c:\users\stguser\documents\visual studio 2013\Projects\GameOfLife\GameOfLife\obj\Debug\GameOfLife.csprojResolveAssemblyReference.cache
+c:\users\stguser\documents\visual studio 2013\Projects\GameOfLife\GameOfLife\obj\Debug\GameOfLife.frmMain.resources
+c:\users\stguser\documents\visual studio 2013\Projects\GameOfLife\GameOfLife\obj\Debug\GameOfLife.Properties.Resources.resources
+c:\users\stguser\documents\visual studio 2013\Projects\GameOfLife\GameOfLife\obj\Debug\GameOfLife.csproj.GenerateResource.Cache
+c:\users\stguser\documents\visual studio 2013\Projects\GameOfLife\GameOfLife\obj\Debug\GameOfLife.exe
+c:\users\stguser\documents\visual studio 2013\Projects\GameOfLife\GameOfLife\obj\Debug\GameOfLife.pdb
+c:\users\stguser\documents\visual studio 2013\Projects\GameOfLife\GameOfLife\obj\Debug\GameOfLife.frmSettings.resources
