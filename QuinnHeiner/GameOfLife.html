@@ -1,0 +1,200 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="viewport" content="width=device-width" charset="utf-8" />
+    <title>Game of Life</title>
+    <style>
+        #game-of-life-grid {
+            border: 1px solid black;
+            margin-top: 1em;
+        }
+
+        .game-of-life-cell {
+            min-height: 1em;
+            min-width: 1em;
+            padding: 0;
+            margin: 0;
+        }
+
+        .game-of-life-living-cell {
+            background-color: white;
+        }
+
+        .game-of-life-dead-cell {
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>The Game of Life</h1>
+        <p>
+            The universe of the Game of Life is an infinite two-dimensional orthogonal grid of square cells, each of which is in one of two possible states, live (white) or dead (black).
+            Every cell interacts with its eight neighbours, which are the cells that are directly horizontally, vertically, or diagonally adjacent. At each step in time, the following transitions occur:
+        </p>
+        <ol>
+            <li>Any live cell with fewer than two live neighbours dies, as if by needs caused by underpopulation.</li>
+            <li>Any live cell with more than three live neighbours dies, as if by overcrowding.</li>
+            <li>Any live cell with two or three live neighbours lives, unchanged, to the next generation.</li>
+            <li>Any dead cell with exactly three live neighbours cells will come to life.</li>
+        </ol>
+        <p>
+            The initial pattern constitutes the 'seed' of the system.
+            The first generation is created by applying the above rules simultaneously to every cell in the seed — births and deaths happen simultaneously,
+            and the discrete moment at which this happens is sometimes called a tick. (In other words, each generation is a pure function of the one before.) The rules continue to be applied repeatedly to create further generations.
+        </p>
+        <p>See <a target="_blank" href="http://www.conwaylife.com/wiki/Conway's_Game_of_Life">Wikipedia</a> for more information.</p>
+    </div>
+    <div>
+        <form id="game-of-life-form" onsubmit="return false;">
+            <label for="interval">Refresh interval (must between 50 and 10000 milliseconds)</label>
+            <input id="interval" type="number" min="50" max="10000" step="50" required />
+            <input id="startGameOfLifeBtn" type="button" onclick="startGameOfLife()" value="Start" />
+            <input id="stopGameOfLifeBtn" type="button" onclick="stopGameOfLife()" value="Stop" />
+            <input id="resetGameOfLifeGridBtn" type="button" onclick="renderInitialGrid(100,100)" value="Redraw Grid" />
+        </form>
+    </div>
+    <table id="game-of-life-grid"></table>
+    <script type="text/javascript">
+        var grid = document.getElementById("game-of-life-grid");
+        var setDrawGridLoop;
+
+        function renderInitialGrid(numRows, numColumns) {
+            // remove any previously generated grid cells
+            while (grid.firstChild) {
+                grid.removeChild(grid.firstChild);
+            }
+            var tBodyElement = document.createElement("tbody");
+            tBodyElement.setAttribute("id", "game-of-life-table-body");
+            grid.appendChild(tBodyElement);
+            var rows = new Array(numRows);
+            for (var rowIndex = 0; rowIndex < numRows; rowIndex++) {
+                rows[rowIndex] = new Array(numColumns);
+                var rowElement = document.createElement("tr");
+                tBodyElement.appendChild(rowElement);
+                for (var columnIndex = 0; columnIndex < numColumns; columnIndex++) {
+                    // assign cell a random boolean value
+                    var randomNumber = getRandomInt(1, 10);
+                    rows[rowIndex][columnIndex] = randomNumber < 5;
+                    var cell = document.createElement("td");
+                    var stateClass = rows[rowIndex][columnIndex] == true ? "game-of-life-living-cell" : "game-of-life-dead-cell";
+                    cell.setAttribute("id", rowIndex + "," + columnIndex);
+                    cell.className = "game-of-life-cell " + stateClass;
+                    cell.innerHTML = "&nbsp;";
+                    rowElement.appendChild(cell);
+                }
+            }
+        }
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function refreshGameOfLifeGrid () {
+            for (var rowIndex = 0, row; row = grid.rows[rowIndex]; rowIndex++) {
+                for (var columnIndex = 0, column; column = row.cells[columnIndex]; columnIndex++) {
+                    var isLiving = isLivingCell(column);
+                    var liveNeighborCount = getLiveNeighborCount(rowIndex, columnIndex);
+                    if (isLiving && ((liveNeighborCount < 2 || liveNeighborCount > 3))) {
+                        toggleCellState(column);
+                    } else if (!isLiving && liveNeighborCount == 3) {
+                        toggleCellState(column);
+                    }
+                }
+            }
+        }
+
+        function isLivingCell(element) {
+            return hasClass(element, "game-of-life-living-cell");
+        }
+
+        function hasClass(element, className) {
+            return element && (" " + element.className + " ").indexOf(" " + className + " ") > -1;
+        }
+
+        function getLiveNeighborCount(rowIndex, columnIndex) {
+            var liveNeighborCount = 0;
+
+            // upper-left diagonal (rowIndex - 1, columnIndex - 1)
+            if (AdjacentCellIsLiving(rowIndex, columnIndex, -1, -1)) {
+                liveNeighborCount++;
+            }
+
+            // top (rowIndex - 1, columnIndex + 0)
+            if (AdjacentCellIsLiving(rowIndex, columnIndex, -1, 0)) {
+                liveNeighborCount++;
+            }
+
+            // upper-right diagonal (rowIndex - 1, columnIndex + 1)
+            if (AdjacentCellIsLiving(rowIndex, columnIndex, -1, 1)) {
+                liveNeighborCount++;
+            }
+
+            // left (rowIndex + 0, columnIndex - 1)
+            if (AdjacentCellIsLiving(rowIndex, columnIndex, 0, -1)) {
+                liveNeighborCount++;
+            }
+
+            // right (rowIndex +0, columnIndex + 1)
+            if (AdjacentCellIsLiving(rowIndex, columnIndex, 0, 1)) {
+                liveNeighborCount++;
+            }
+
+            // bottom-left diagonal (rowIndex + 1, columnIndex - 1)
+            if (AdjacentCellIsLiving(rowIndex, columnIndex, 1, -1)) {
+                liveNeighborCount++;
+            }
+
+            // bottom (rowIndex + 1, columnIndex + 0)
+            if (AdjacentCellIsLiving(rowIndex, columnIndex, 1, 0)) {
+                liveNeighborCount++;
+            }
+
+            // bottom-right diagonal (rowIndex + 1, columnIndex + 1)
+            if (AdjacentCellIsLiving(rowIndex, columnIndex, 1, 1)) {
+                liveNeighborCount++;
+            }
+
+            return liveNeighborCount;
+        }
+
+        function AdjacentCellIsLiving(rowIndex, columnIndex, rowOffset, columnOffset) {
+            var adjacentCell = getCellByIndex(rowIndex + rowOffset, columnIndex + columnOffset);
+            return adjacentCell != null & isLivingCell(adjacentCell);
+        }
+
+        function getCellByIndex(rowIndex, columnIndex) {
+            return document.getElementById(rowIndex + "," + columnIndex);
+        }
+
+        function toggleCellState(element) {
+            if (isLivingCell(element)) {
+                element.className = element.className.replace(/\game-of-life-living-cell\b/, 'game-of-life-dead-cell');
+            } else {
+                element.className = element.className.replace(/\game-of-life-dead-cell\b/, 'game-of-life-living-cell');
+            }
+        }
+
+        function startGameOfLife() {
+            var interval = parseInt(document.getElementById("interval").value);
+            if (interval >= 50 && interval <= 10000) {
+                document.getElementById("startGameOfLifeBtn").disabled = true;
+                document.getElementById("resetGameOfLifeGridBtn").disabled = true;
+                setDrawGridLoop = window.setInterval(function () {
+                    refreshGameOfLifeGrid();
+                }, interval);
+            } else {
+                alert("Invalid interval.  Please choose a number between 50 and 10000");
+            }
+        }
+
+        function stopGameOfLife() {
+            document.getElementById("startGameOfLifeBtn").disabled = false;
+            document.getElementById("resetGameOfLifeGridBtn").disabled = false;
+            window.clearInterval(setDrawGridLoop);
+        }
+
+        renderInitialGrid(100, 100);
+    </script>
+</body>
+</html>
